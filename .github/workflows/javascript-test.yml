@@ -1,0 +1,31 @@
+name: Continuous testing
+
+on: [pull_request]
+
+jobs:
+  test-contracts:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Use node 18
+        uses: actions/setup-node@v3
+        with:
+            node-version: 18
+      - name: Install dependencies
+        run: npm --prefix contracts ci
+      - name: Build the project
+        run: npm run --prefix contracts build
+      - name: Test contracts
+        run: npm run --prefix contracts test
+  test-client:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Use node 18
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+      - name: Install dependencies
+        run: npm ci
+      - name: Build the project
+        run: npm run build
