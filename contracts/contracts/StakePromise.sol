@@ -16,12 +16,19 @@ contract StakePromise {
       bool approved;
     }
 
-    constructor(uint256 _deadline, uint256 _stakeAmount, string memory _promise) payable {
+    constructor(uint256 _deadline, string memory _promise) payable {
+        require(msg.value >= 0, "Staked amount was not transfered");
         deadline = _deadline;
-        stakeAmount = _stakeAmount;
+        stakeAmount = msg.value;
         promiseMilestone = _promise;
-        totalStakedAmount = _stakeAmount;
+        totalStakedAmount = msg.value;
         author.account = msg.sender;
+    }
+
+    function cancel() public {
+        require(msg.sender == author.account, "Only the author can cancel the contract");
+        require(!active, "The promise can not be cancelled once it becomes active");
+        payable(author.account).transfer(stakeAmount);
     }
 
     function sign() public payable {
@@ -45,7 +52,7 @@ contract StakePromise {
         }
     }
 
-    function onDeadline() public returns (bool) {
+    function onDeadline() public {
         require(block.timestamp > deadline, "The deadline has not happened yet");
         require(active, "The promise is not active");
         if(author.approved && collaborator.approved) {
@@ -54,7 +61,6 @@ contract StakePromise {
             payable(author.account).transfer(totalStakedAmount / 2);
             // pay to the collaborator
             payable(collaborator.account).transfer(totalStakedAmount / 2);
-            return true;
         } else {
             // send the tokens to a carbon footprint account
             payable(0x0).transfer(totalStakedAmount);
@@ -62,6 +68,6 @@ contract StakePromise {
 
         totalStakedAmount = 0;
         active = false;
-        return false;
+        stakeAmount = 0;
     }
 }

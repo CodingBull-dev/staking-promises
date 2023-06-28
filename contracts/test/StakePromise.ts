@@ -1,8 +1,7 @@
 import {
-  time,
   loadFixture,
+  time,
 } from "@nomicfoundation/hardhat-toolbox/network-helpers";
-import { anyValue } from "@nomicfoundation/hardhat-chai-matchers/withArgs";
 import { expect } from "chai";
 import { ethers } from "hardhat";
 
@@ -21,7 +20,7 @@ describe("Stake Promise", function () {
     const [owner, otherAccount] = await ethers.getSigners();
 
     const Promise = await ethers.getContractFactory("StakePromise");
-    const stakePromise = await Promise.deploy(unlockTime, lockedAmount, "This is a test", { value: lockedAmount });
+    const stakePromise = await Promise.deploy(unlockTime, "This is a test", { value: lockedAmount });
 
     return { stakePromise, unlockTime, lockedAmount, owner, otherAccount };
   }
@@ -46,6 +45,37 @@ describe("Stake Promise", function () {
 
       expect(await ethers.provider.getBalance(stakePromise.getAddress())).to.equal(
         lockedAmount
+      );
+    });
+  });
+
+  describe("Cancelation", function () {
+    it("Should cancel the transaction and return the tokens", async function () {
+      const { stakePromise, owner, lockedAmount } = await loadFixture(deployOneYearLockFixture);
+
+      await expect(stakePromise.cancel()).to.changeEtherBalances(
+        [owner],
+        [lockedAmount]
+      );
+    });
+
+    it("Should fail to cancel the transaction if the second user signed the promise", async function () {
+      const { stakePromise, lockedAmount, otherAccount } = await loadFixture(deployOneYearLockFixture);
+
+      // @ts-ignore sign is valid. For some reason it is not detecting it
+      await stakePromise.connect(otherAccount).sign({ value: lockedAmount });
+
+      await expect(stakePromise.cancel()).to.be.revertedWith(
+        "The promise can not be cancelled once it becomes active"
+      );
+    });
+
+    it("Should not allow a second account to cancel the promise", async function () {
+      const { stakePromise, otherAccount } = await loadFixture(deployOneYearLockFixture);
+
+      // @ts-ignore sign is valid. For some reason it is not detecting it
+      await expect(stakePromise.connect(otherAccount).cancel()).to.be.revertedWith(
+        "Only the author can cancel the contract"
       );
     });
   });
@@ -110,7 +140,7 @@ describe("Stake Promise", function () {
     });
 
     it("Should fail if the second user didn't sign the contract", async function () {
-      const { stakePromise, unlockTime, lockedAmount, owner, otherAccount } = await loadFixture(
+      const { stakePromise, unlockTime } = await loadFixture(
         deployOneYearLockFixture
       );
 
