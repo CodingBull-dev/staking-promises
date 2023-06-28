@@ -47,6 +47,15 @@ class StakingContract implements IStakingContract {
         return { deadline, amount, promise: text };
 
     }
+
+    async activated():Promise<boolean> {
+        if (!this.promise) {
+            throw new Error("Promise doesn't have an address");
+        }
+        return this.promise.active();
+
+    }
+
     async approvePromiseFulfillment(): Promise<void> {
         await this.promise?.approve();
     }

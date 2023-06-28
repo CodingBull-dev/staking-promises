@@ -9,6 +9,7 @@ export default function Page({ params }: { params: { slug: string } }) {
   const [data, setData] = useState<PromiseData>();
   const [error, setError] = useState<string>();
   const [signer, setSigner] = useState<ethers.JsonRpcSigner>();
+  const [activated, setActivated] = useState<boolean>();
 
   useEffect(() => {
     async function fetchData() {
@@ -18,6 +19,7 @@ export default function Page({ params }: { params: { slug: string } }) {
         const promise = await contract.getPromise();
         setData(promise);
         setSigner(signer);
+        setActivated(await contract.activated());
       } catch (e: any) {
         setError(e.message);
       }
@@ -32,6 +34,18 @@ export default function Page({ params }: { params: { slug: string } }) {
     const contract = new StakingContract(signer, params.slug);
     try {
       await contract.signPromise();
+    } catch (e: any) {
+      setError(e.message);
+    }
+  }
+
+  const approveTheirAction = async () => {
+    if (!signer) {
+      throw new Error("Metamask has been disabled!");
+    }
+    const contract = new StakingContract(signer, params.slug);
+    try {
+      await contract.approvePromiseFulfillment();
     } catch (e: any) {
       setError(e.message);
     }
@@ -103,7 +117,10 @@ export default function Page({ params }: { params: { slug: string } }) {
         </div>
       </div>
       <div className="mt-12 flex">
-        <button className="mx-auto bg-[#81E353] text-black px-6 py-3 uppercase" onClick={approveTransaction}>Accept</button>
+        {activated ?
+          (<button className="mx-auto bg-[#81E353] text-black px-6 py-3 uppercase" onClick={approveTheirAction}>They fulfilled their promise</button>) :
+          (<button className="mx-auto bg-[#81E353] text-black px-6 py-3 uppercase" onClick={approveTransaction}>Accept</button>)
+        }
       </div>
     </>
   )
