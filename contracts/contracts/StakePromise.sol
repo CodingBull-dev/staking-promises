@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.9;
 
+import "@openzeppelin/contracts/token/ERC721/ERC721Full.sol";
+
 contract StakePromise {
     uint256 public deadline;
     uint256 public stakeAmount;
@@ -63,6 +65,7 @@ contract StakePromise {
             payable(collaborator.account).transfer(totalStakedAmount / 2);
         } else {
             // send the tokens to a carbon footprint account
+            // TODO: Call the automatic TCO2 retirement.
             payable(0x0).transfer(totalStakedAmount);
         }
 
