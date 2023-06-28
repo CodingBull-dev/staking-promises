@@ -44,9 +44,10 @@ export const isConnected = async (): Promise<boolean> => {
     return false;
 }
 
-export const connect = async (): Promise<void> => {
+export const connect = async (): Promise<ethers.JsonRpcSigner> => {
     const signer = await getSigner();
     await switchNetwork();
+    return signer;
 }
 
 export const switchNetwork = (): Promise<void> => {

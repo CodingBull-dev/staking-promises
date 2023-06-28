@@ -1,6 +1,8 @@
 import { StakePromise__factory } from "@/contracts";
-import { formatEther, parseUnits } from "ethers";
+import { ethers, formatEther, parseUnits } from "ethers";
 import { StakePromise } from "../../contracts/StakePromise";
+
+export type PromiseData = { deadline: number; amount: string; promise: string; };
 
 export interface IStakingContract {
     //* Creates a promise and returns the address of it */
@@ -8,7 +10,7 @@ export interface IStakingContract {
     //** To be signed by the second user */
     signPromise(): Promise<void>;
     cancelPromise(): Promise<void>;
-    getPromise(): Promise<{ deadline: number; amount: string; promise: string; }>;
+    getPromise(): Promise<PromiseData>;
     //* To approve the other person's fulfillment of the promise
     approvePromiseFulfillment(): Promise<void>;
     //* This will return the tokens to either the authors or generate negative carbon footprint */
@@ -18,22 +20,24 @@ export interface IStakingContract {
 
 class StakingContract implements IStakingContract {
     private readonly promise: StakePromise | null = null;
-    constructor(contractAddress?: string) {
+    constructor(private readonly wallet:ethers.JsonRpcSigner, contractAddress?: string) {
         if (contractAddress) {
-            this.promise = StakePromise__factory.connect(contractAddress);
+            console.log("connecting to contract in", contractAddress);
+            this.promise = StakePromise__factory.connect(contractAddress, wallet);
         }
     }
     async createPromise(deadline: number, amount: number, promise: string): Promise<string> {
-        const deployment = await new StakePromise__factory().deploy(deadline, promise, { value: parseUnits(`${amount}`, "eth") });
+        const deployment = await new StakePromise__factory(this.wallet).deploy(deadline, promise, { value: parseUnits(`${amount}`, "ether") });
         return deployment.getAddress();
     }
     async signPromise(): Promise<void> {
-        await this.promise?.sign();
+        const value = await this.promise?.stakeAmount();
+        await this.promise?.sign({value});
     }
     async cancelPromise(): Promise<void> {
         await this.promise?.cancel();
     }
-    async getPromise(): Promise<{ deadline: number; amount: string; promise: string; }> {
+    async getPromise(): Promise<PromiseData> {
         if (!this.promise) {
             throw new Error("Promise doesn't have an address");
         }
