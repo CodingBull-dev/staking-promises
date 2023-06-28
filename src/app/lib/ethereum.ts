@@ -1,4 +1,4 @@
-import { ethers } from "ethers";
+import { ethers, BrowserProvider } from "ethers";
 
 type EthMethods = "eth_requestAccounts" | "wallet_switchEthereumChain" | "wallet_addEthereumChain";
 type MetamaskEvent = "chainChanged"
@@ -30,6 +30,23 @@ export const isInCorrectNetwork = (): Promise<boolean> => {
         const ethereum: Ethereum = window.ethereum as Ethereum;
         res(ethereum.networkVersion === chainId);
     });
+}
+
+export const isConnected = async (): Promise<boolean> => {
+    const accounts = await getAccounts();
+    if (accounts && accounts.length > 0) {
+        const signer = await getSigner();
+        // @ts-ignore
+        const currentNetwork = window.ethereum.networkVersion;
+        return currentNetwork === chainId
+    }
+
+    return false;
+}
+
+export const connect = async (): Promise<void> => {
+    const signer = await getSigner();
+    await switchNetwork();
 }
 
 export const switchNetwork = (): Promise<void> => {
@@ -69,4 +86,23 @@ export const switchNetwork = (): Promise<void> => {
                     });
             });
     });
+}
+
+export const getSigner = async () => {
+    // @ts-ignore I don't know how to set types in nextjs
+    const ethereum: Ethereum = window.ethereum as Ethereum;
+    const provider = new BrowserProvider(ethereum);
+    await ethereum.enable();
+    const signer = provider.getSigner();
+    return signer;
+}
+
+export const getAccounts = async (): Promise<string[]> => {
+    // @ts-ignore I don't know how to set types in nextjs
+    const ethereum: Ethereum = window.ethereum as Ethereum;
+    if (!ethereum) {
+        return [];
+    }
+    const provider = new BrowserProvider(ethereum);
+    return (await provider.listAccounts()).map(a => a.address);
 }
