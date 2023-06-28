@@ -2,7 +2,7 @@ import { StakePromise__factory } from "@/contracts";
 import { formatEther, parseUnits } from "ethers";
 import { StakePromise } from "../../contracts/StakePromise";
 
-interface IStakingContract {
+export interface IStakingContract {
     //* Creates a promise and returns the address of it */
     createPromise(deadline: number, amount: number, promise: string): Promise<string>;
     //** To be signed by the second user */
