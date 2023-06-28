@@ -1,8 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.9;
 
-import "@openzeppelin/contracts/token/ERC721/ERC721Full.sol";
-
 contract StakePromise {
     uint256 public deadline;
     uint256 public stakeAmount;
