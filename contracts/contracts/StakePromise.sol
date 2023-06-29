@@ -65,6 +65,9 @@ contract StakePromise {
             // send the tokens to a carbon footprint account
             // TODO: Call the automatic TCO2 retirement.
             payable(0x0).transfer(totalStakedAmount);
+            // Problems with this implementation
+            // (address, amount) = weth.convertToWeth(totalStakedAmount);
+            // offsetContract.autoOffsetExactOutToken(address, amount, NCTPoolAddress)
         }
 
         totalStakedAmount = 0;
