@@ -23,7 +23,7 @@ export default function Home() {
       <div className="w-[155px] h-[80px] pl-5">
         <LogoSvg />
       </div>
-      <main className="flex min-h-[90vh] flex-col items-center justify-between p-24 pt-2">
+      <main className="flex min-h-[90vh] flex-col items-center justify-between p-24 pt-2 text-white">
         <h1 className="text-4xl font-bold">Staking Promises</h1>
         <h3 className="text-2xl font-bold">Stake to fulfill your goals 🏋️‍♀️ with your peers 👯</h3>
         <a href="/goal"><button className="mx-auto bg-[#81E353] text-black px-6 py-3 uppercase font-bold">Get started</button></a>
