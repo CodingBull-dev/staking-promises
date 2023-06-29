@@ -5,11 +5,19 @@ import { PromiseData, StakingContract } from "@/app/lib/smartContract";
 import { ethers } from "ethers";
 import { useEffect, useState } from "react";
 
+const dateToDatePickerFormat = (date: Date): string => {
+  return date.getFullYear() + "-"
+    + (date.getMonth() + 1).toLocaleString("en-US", { minimumIntegerDigits: 2 }) + "-"
+    + (date.getDate() + 1).toLocaleString("en-US", { minimumIntegerDigits: 2 })
+}
+
 export default function Page({ params }: { params: { slug: string } }) {
-  const [data, setData] = useState<PromiseData>();
+  const [data, setData] = useState<{ deadline: string; amount: string; promise: string; }>();
   const [error, setError] = useState<string>();
   const [signer, setSigner] = useState<ethers.JsonRpcSigner>();
   const [activated, setActivated] = useState<boolean>();
+  const dateStart = dateToDatePickerFormat(new Date());
+
 
   useEffect(() => {
     async function fetchData() {
@@ -17,7 +25,10 @@ export default function Page({ params }: { params: { slug: string } }) {
         const signer = await connect();
         const contract = new StakingContract(signer, params.slug);
         const promise = await contract.getPromise();
-        setData(promise);
+        const deadlineDate = new Date(promise.deadline);
+        const formattedDate = dateToDatePickerFormat(deadlineDate);
+        console.log("Promise data", { ...promise, deadline: formattedDate });
+        setData({ ...promise, deadline: formattedDate });
         setSigner(signer);
         setActivated(await contract.activated());
       } catch (e: any) {
@@ -83,6 +94,7 @@ export default function Page({ params }: { params: { slug: string } }) {
             className="w-[200px] h-[40px] bg-[#504D35] border border-solid border-[#f0dc3f] rounded-md px-2"
             type="date"
             list="popularHours"
+            min={dateStart}
             disabled
             value={data.deadline}
           />

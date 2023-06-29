@@ -6,7 +6,7 @@ export default function VotingLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div>
+    <div className="bg-black min-h-screen">
           <div className="w-[155px] h-[80px] pl-5">
             <LogoSvg />
           </div>
