@@ -4,9 +4,9 @@ import { connect } from "../lib/ethereum";
 import { StakingContract } from "../lib/smartContract";
 import { sign } from "crypto";
 import ErrorMessage from "../lib/component/error";
-import { redirect } from 'next/navigation';
+import { redirect } from "next/navigation";
 
-type GoalData = { goalName: string; deadLine: number; amount: number }
+type GoalData = { goalName: string; deadLine: number; amount: number };
 
 // type GoalDataProps = GoalData & {
 //   updateFields: (fields: Partial<GoalData>) => void
@@ -21,13 +21,13 @@ type GoalData = { goalName: string; deadLine: number; amount: number }
 // get invest data from SmartContract
 
 interface FormElements extends HTMLFormControlsCollection {
-  promise: HTMLInputElement
-  deadline: HTMLInputElement
-  amount: HTMLInputElement
+  promise: HTMLInputElement;
+  deadline: HTMLInputElement;
+  amount: HTMLInputElement;
 }
 
 interface GoalFormElements extends HTMLFormElement {
-  readonly elements: FormElements
+  readonly elements: FormElements;
 }
 
 export default function SetGoalPage() {
@@ -49,7 +49,9 @@ export default function SetGoalPage() {
       console.log(deadline);
       const newAddress = await contract.createPromise(deadline, celos, promise);
       console.log("New contract address is:", newAddress);
-      window.location.replace(new URL("/goal/" + newAddress, window.location.href).href);
+      window.location.replace(
+        new URL("/goal/" + newAddress, window.location.href).href
+      );
     } catch (e: any) {
       setError(e.message);
     }
@@ -61,13 +63,13 @@ export default function SetGoalPage() {
 
   return (
     <form onSubmit={handlePostForm}>
-      <div className="flex h-[120px] gap-2 justify-around">
-        <div className="flex flex-col">
-          <label className="text-[#ffffff] text-md pb-3">
+      <div className="flex h-[120px]  justify-around">
+        <div className="flex flex-col items-center justify-center">
+          <label className="text-[#ffffff] text-md pb-3 text-center">
             What is your goal?
           </label>
           <input
-            className="w-[200px] h-[40px] bg-[#504D35] border border-solid border-[#f0dc3f] rounded-md px-2"
+            className="w-[275px] h-[40px] bg-[#504D35] border border-solid border-[#f0dc3f] rounded-md px-2"
             required
             list="promises"
             type="text"
@@ -80,55 +82,55 @@ export default function SetGoalPage() {
           <option value="Loose 2 KGs" />
           <option value="Eat a salad once per week" />
         </datalist>
-        <div className="flex flex-col">
-          <label className="text-[#ffffff] text-md pb-3">
+        <div className="flex flex-col items-center justify-center">
+          <label className="text-[#ffffff] text-md pb-3 text-center">
             When do you want to achieve it?
           </label>
           <input
-            className="w-[200px] h-[40px] bg-[#504D35] border border-solid border-[#f0dc3f] rounded-md px-2"
+            className="w-[275px] h-[40px] bg-[#504D35] border border-solid border-[#f0dc3f] rounded-md px-2"
             type="date"
             name="deadline"
             required
           />
         </div>
       </div>
-      <div className="flex h-[235px] gap-2 justify-around">
-        <div className="flex flex-col">
-          <label className="text-[#ffffff] text-md pb-3">
+      <div className="flex h-[235px] justify-around items-center gap-5 pl-8">
+        <div className="flex flex-col justify-center items-center">
+          <label className="text-[#ffffff] text-md pb-3 text-center flex items-center justify-center">
             How much do you want to stake?
           </label>
-          <div
-            className="w-[200px] h-[200px] bg-[#AFD6F5] self-center flex"
-          >
-            <div className="my-auto grid grid-cols-2 gap-2 text-black text-4xl rounded-md p-2">
+          <div className="w-[211px] h-[200px] bg-[#AFD6F5] self-center flex rounded items-center justify-center">
+            <div className="my-auto grid grid-cols-2  text-[#151515] text-2xl rounded p-4">
               <input
                 required
                 type="number"
                 value={celos}
                 onChange={handleChange}
-                className="bg-transparent text-right"
+                className="bg-transparent text-right w-16"
                 name="amount"
               />
               cELO
             </div>
           </div>
         </div>
-        <div className="flex flex-col">
-          <label className="text-[#ffffff] text-md pb-3">
+        <div className="flex flex-col justify-center items-center p-12">
+          <label className="text-[#ffffff] text-md pb-3 text-center flex items-center justify-center">
             This is the risk you take
           </label>
-          <div className=" h-[200px] w-[200px] bg-[#F3BAD2] self-center text-center text-black text-3xl rounded-md p-2">
+          <div className=" h-[200px] w-[211px] bg-[#F3BAD2] overflow-x-scroll self-center text-center text-[#151515] text-2xl rounded-md p-2 flex items-center justify-center p-4">
             {celos > 0 ? `${celos} cELO used to offset carbon credits` : ""}
           </div>
         </div>
       </div>
       <div className="mt-12 flex">
-        <button type="submit"
+        <button
+          type="submit"
           disabled={loading}
-          className="mx-auto bg-[#FF006E] text-black px-6 py-3 uppercase">
+          className="mx-auto bg-[#FF006E] text-black px-6 py-3 uppercase font-medium"
+        >
           {loading ? "Loading" : "Create goal"}
         </button>
       </div>
     </form>
-  )
+  );
 }
