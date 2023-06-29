@@ -47,6 +47,7 @@ export default function Page({ params }: { params: { slug: string } }) {
     const contract = new StakingContract(signer, params.slug);
     try {
       await contract.signPromise();
+      window.location.reload();
     } catch (e: any) {
       setError(e.message);
     }
@@ -106,7 +107,6 @@ export default function Page({ params }: { params: { slug: string } }) {
           >
             <div className="my-auto grid grid-cols-2 gap-2 text-black text-4xl rounded-md p-2">
               <input
-                required
                 type="number"
                 value={data.amount}
                 disabled

@@ -20,7 +20,7 @@ export interface IStakingContract {
 
 class StakingContract implements IStakingContract {
     private readonly promise: StakePromise | null = null;
-    constructor(private readonly wallet:ethers.JsonRpcSigner, contractAddress?: string) {
+    constructor(private readonly wallet: ethers.JsonRpcSigner, contractAddress?: string) {
         if (contractAddress) {
             console.log("connecting to contract in", contractAddress);
             this.promise = StakePromise__factory.connect(contractAddress, wallet);
@@ -32,8 +32,12 @@ class StakingContract implements IStakingContract {
         return deployment.getAddress();
     }
     async signPromise(): Promise<void> {
-        const value = await this.promise?.stakeAmount();
-        await this.promise?.sign({value});
+        if (!this.promise) {
+            throw new Error("Contract address has not been defined");
+        }
+        const value = await this.promise.stakeAmount();
+        const tx = await this.promise.sign({ value });
+        await tx.wait();
     }
     async cancelPromise(): Promise<void> {
         await this.promise?.cancel();
@@ -49,7 +53,7 @@ class StakingContract implements IStakingContract {
 
     }
 
-    async activated():Promise<boolean> {
+    async activated(): Promise<boolean> {
         if (!this.promise) {
             throw new Error("Promise doesn't have an address");
         }
