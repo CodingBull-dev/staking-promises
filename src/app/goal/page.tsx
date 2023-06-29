@@ -69,7 +69,7 @@ export default function SetGoalPage() {
             What is your goal?
           </label>
           <input
-            className="w-[275px] h-[40px] bg-[#504D35] border border-solid border-[#f0dc3f] rounded-md px-2"
+            className="w-[275px] h-[40px] bg-[#504D35] border border-solid border-[#f0dc3f] rounded px-2"
             required
             list="promises"
             type="text"
@@ -77,17 +77,20 @@ export default function SetGoalPage() {
           />
         </div>
         <datalist id="promises">
-          <option value="Run a marathon" />
-          <option value="Go to the gym" />
-          <option value="Loose 2 KGs" />
-          <option value="Eat a salad once per week" />
+          <option value="20 mins cardio, 5x/week" />
+          <option value="Meditate 5 mins daily" />
+          <option value="Eat veggies with every meal" />
+          <option value="No alcohol on weekdays" />
+          <option value="15 mins workout, 3x/week" />
+          <option value="Quit smoking" />
+          <option value="Bed before 23:00 on weekdays" />
         </datalist>
         <div className="flex flex-col items-center justify-center">
           <label className="text-[#ffffff] text-md pb-3 text-center">
             When do you want to achieve it?
           </label>
           <input
-            className="w-[275px] h-[40px] bg-[#504D35] border border-solid border-[#f0dc3f] rounded-md px-2"
+            className="w-[275px] h-[40px] bg-[#504D35] border border-solid border-[#f0dc3f] rounded px-2"
             type="date"
             name="deadline"
             required
@@ -99,7 +102,7 @@ export default function SetGoalPage() {
           <label className="text-[#ffffff] text-md pb-3 text-center flex items-center justify-center">
             How much do you want to stake?
           </label>
-          <div className="w-[211px] h-[200px] bg-[#AFD6F5] self-center flex rounded items-center justify-center">
+          <div className="w-[211px] h-[200px] bg-[#AFD6F5] self-center flex rounded items-center justify-center ">
             <div className="my-auto grid grid-cols-2  text-[#151515] text-2xl rounded p-4">
               <input
                 required
