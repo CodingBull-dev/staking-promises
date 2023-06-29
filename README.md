@@ -6,3 +6,7 @@ Make a promise with a friend and fulfill it together to get staking rewards, or 
 
 - `npm install` to install the base project.
 - `npm run dev` to develop the application.
+
+## Testing
+
+The solidity contract has several tests. To run them execute `npm run --prefix contracts test`.
