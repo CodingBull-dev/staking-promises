@@ -92,6 +92,9 @@ export const switchNetwork = (): Promise<void> => {
 export const getSigner = async () => {
     // @ts-ignore I don't know how to set types in nextjs
     const ethereum: Ethereum = window.ethereum as Ethereum;
+    if(!ethereum) {
+        throw new Error("Ethereum client not found!");
+    }
     const provider = new BrowserProvider(ethereum);
     await ethereum.enable();
     const signer = provider.getSigner();
