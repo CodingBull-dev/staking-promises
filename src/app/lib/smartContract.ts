@@ -28,6 +28,7 @@ class StakingContract implements IStakingContract {
     }
     async createPromise(deadline: number, amount: number, promise: string): Promise<string> {
         const deployment = await new StakePromise__factory(this.wallet).deploy(deadline, promise, { value: parseUnits(`${amount}`, "ether") });
+        await deployment.waitForDeployment();
         return deployment.getAddress();
     }
     async signPromise(): Promise<void> {

@@ -55,7 +55,7 @@ export const switchNetwork = (): Promise<void> => {
         // @ts-ignore I don't know how to set types in nextjs
         const ethereum: Ethereum = window.ethereum as Ethereum;
         if (!ethereum) {
-            return;
+            throw new Error("Ethereum client not found!");
         }
         if (ethereum.networkVersion === chainId) {
             return res();

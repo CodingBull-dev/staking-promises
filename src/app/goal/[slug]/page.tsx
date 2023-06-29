@@ -1,5 +1,6 @@
 "use client";
 
+import ErrorMessage from "@/app/lib/component/error";
 import { connect } from "@/app/lib/ethereum";
 import { PromiseData, StakingContract } from "@/app/lib/smartContract";
 import { ethers } from "ethers";
@@ -16,6 +17,7 @@ export default function Page({ params }: { params: { slug: string } }) {
   const [error, setError] = useState<string>();
   const [signer, setSigner] = useState<ethers.JsonRpcSigner>();
   const [activated, setActivated] = useState<boolean>();
+  const [loading, setLoading] = useState<boolean>();
   const dateStart = dateToDatePickerFormat(new Date());
 
 
@@ -66,11 +68,7 @@ export default function Page({ params }: { params: { slug: string } }) {
     return (<div>Loading... {params.slug}</div>);
 
   if (error) {
-    return (<div>
-      <h2>Error</h2>
-      <p>{error}</p>
-      <p>Make sure you have <a href="https://metamask.io/">Metamask installed</a>!</p>
-    </div>);
+    return ErrorMessage({ error });
   }
 
   return (
@@ -93,8 +91,6 @@ export default function Page({ params }: { params: { slug: string } }) {
           <input
             className="w-[200px] h-[40px] bg-[#504D35] border border-solid border-[#f0dc3f] rounded-md px-2"
             type="date"
-            list="popularHours"
-            min={dateStart}
             disabled
             value={data.deadline}
           />

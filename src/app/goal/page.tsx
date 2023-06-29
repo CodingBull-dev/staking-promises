@@ -3,6 +3,8 @@ import { useState } from "react";
 import { connect } from "../lib/ethereum";
 import { StakingContract } from "../lib/smartContract";
 import { sign } from "crypto";
+import ErrorMessage from "../lib/component/error";
+import { redirect } from 'next/navigation';
 
 type GoalData = { goalName: string; deadLine: number; amount: number }
 
@@ -31,18 +33,30 @@ interface GoalFormElements extends HTMLFormElement {
 export default function SetGoalPage() {
   // return (<h2>Hi!</h2>);
   const [celos, setCelos] = useState<number>(5);
+  const [error, setError] = useState<string>();
+  const [loading, setLoading] = useState<boolean>();
   const handleChange = (e: any) => setCelos(e.target.value);
 
   const handlePostForm = async (e: React.FormEvent<GoalFormElements>) => {
     e.preventDefault();
     const deadlineString = e.currentTarget.elements.deadline.value;
-    const deadline = new Date(deadlineString).getTime() / 1000;
+    const deadline = new Date(deadlineString).getTime();
     const promise = e.currentTarget.elements.promise.value;
-    const signer = await connect();
-    const contract = new StakingContract(signer);
-    console.log(deadline);
-    const newAddress = await contract.createPromise(deadline, celos, promise);
-    console.log("New contract address is:", newAddress);
+    try {
+      setLoading(true);
+      const signer = await connect();
+      const contract = new StakingContract(signer);
+      console.log(deadline);
+      const newAddress = await contract.createPromise(deadline, celos, promise);
+      console.log("New contract address is:", newAddress);
+      window.location.replace(new URL("/goal/" + newAddress, window.location.href).href);
+    } catch (e: any) {
+      setError(e.message);
+    }
+  };
+
+  if (error) {
+    return ErrorMessage({ error });
   }
 
   return (
@@ -73,7 +87,6 @@ export default function SetGoalPage() {
           <input
             className="w-[200px] h-[40px] bg-[#504D35] border border-solid border-[#f0dc3f] rounded-md px-2"
             type="date"
-            list="popularHours"
             name="deadline"
             required
           />
@@ -110,7 +123,11 @@ export default function SetGoalPage() {
         </div>
       </div>
       <div className="mt-12 flex">
-        <button type="submit" className="mx-auto bg-[#FF006E] text-black px-6 py-3 uppercase">Create goal</button>
+        <button type="submit"
+          disabled={loading}
+          className="mx-auto bg-[#FF006E] text-black px-6 py-3 uppercase">
+          {loading ? "Loading" : "Create goal"}
+        </button>
       </div>
     </form>
   )
